@@ -1,14 +1,13 @@
 function [dX, y_hat] = osservatore(t,X)
 
-    global c1 c2 c3 c4 k omegad1 d1
+    global c k omegad1 d1
     % Parametri
     g = 9.81;       % m/(s^2),
     m = 0.45;       % kg, peso del drone
     l = 0.23;       % m, Distanza dell'elica dal centro di massa
     kk = 7.5e-7;     % Coefficiente di portanza delle eliche
     b = 3e-6;       % Coefficiente di resistenza aereodinamica
-    p = 1;
-
+    
     %%% Inerzie
     % I_M = 3.357e-5;     % kg*m^2, Inertia Moment of the rotor
     Ir = 6e-5;     % kg*m^2, Inertia of Gyroscopic Effect
@@ -30,8 +29,6 @@ function [dX, y_hat] = osservatore(t,X)
     
     % dinamica del processo
     % Pitch (su e giù)
-    u2 = 1;
-     
     x1_dot_z = x2;
     x2_dot_z = 1/m*(-g*x3 - b*x2);
     x3_dot_z = x4;
@@ -48,6 +45,6 @@ function [dX, y_hat] = osservatore(t,X)
     x3_dot_hat = x4_hat + c3*k^3*(y-y_hat);
     x4_dot_hat = p/Izz*u2 + c4*k^4*(y-y_hat);
   
-    dX = [x1_dot_z; x2_dot_z; x3_dot_z; x4_dot_z; x1_dot_hat; x2_dot_hat; x3_dot_hat; x4_dot_hat];
+    dX = [x1_dot_z; x2_dot_z; x3_dot_z; x4_dot_z, x1_dot_hat; x2_dot_hat; x3_dot_hat; x4_dot_hat];
 
 end
