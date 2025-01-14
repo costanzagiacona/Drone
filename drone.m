@@ -19,10 +19,12 @@ Izz = 8e-3;    % kg*m^2,
 I = [Ixx 0 0; 0 Iyy 0; 0 0 Izz];
 
 % CONDIZIONI INIZIALI
-% X_o = [2; -1; 1; 2];
-X_o = [0; 0; 0; 0];
+X_o = [2; 5; 0; 3];
+% X_o = [0; 0; 0; 0];
 Xhat_o = [0; 0; 0; 0];
 
+% X_o = [1; 0; 0.1; 0];
+% Xhat_o = [0; 0; 0; 0];
 
 % Equazioni del sistema
 % x1 = y
@@ -46,10 +48,10 @@ Xhat_o = [0; 0; 0; 0];
 
 %% Funzione per osservatore
 global c1 c2 c3 c4 k omegad1 d1
-c1 = 1; 
-c2 = 1.5; 
-c3 = 2; 
-c4 = 0.5; 
+c1 = 15; 
+c2 = 50; 
+c3 = 20; 
+c4 = 10; 
 k = 10;
 c = [c1 c2 c3 c4];
 % k = 100;
@@ -63,30 +65,117 @@ odeoptions = odeset('RelTol',1e-8,'AbsTol',1e-10);
 
 %%
 figure(1)
-ax(1) = subplot(2,1,1);
-plot(t,x(:,1),'-b',t,x(:,3),'--r','LineWidth',2);
+ax(1) = subplot(2,2,1);
+plot(t,x(:,1),'-b',t,x(:,5),'--r','LineWidth',2);
 legend('x_1','\overline x_1');
 % set(gca,'FontSize',18)
 grid on
 
-ax(2) = subplot(2,1,2);
-plot(t,x(:,2),'-b',t,x(:,4),'--r','LineWidth',2);
+ax(2) = subplot(2,2,2);
+plot(t,x(:,2),'-b',t,x(:,6),'--r','LineWidth',2);
 legend('x_2','\overline x_2');
 xlabel('Time [s]')
 % set(gca,'FontSize',18)
 grid on
 
+ax(1) = subplot(2,2,3);
+plot(t,x(:,3),'-b',t,x(:,7),'--r','LineWidth',2);
+legend('x_3','\overline x_3');
+% set(gca,'FontSize',18)
+grid on
+
+ax(2) = subplot(2,2,4);
+plot(t,x(:,4),'-b',t,x(:,8),'--r','LineWidth',2);
+legend('x_4','\overline x_4');
+xlabel('Time [s]')
+% set(gca,'FontSize',18)
+grid on
+
 figure(2)
-ax(1) = subplot(2,1,1);
-plot(t,x(:,1)-x(:,3),'LineWidth',2);
+ax(1) = subplot(2,2,1);
+plot(t,x(:,1)-x(:,5),'LineWidth',2);
 legend('e_1');
 % set(gca,'FontSize',18)
 grid on
 
-ax(2) = subplot(2,1,2);
-plot(t,x(:,2)-x(:,4),'LineWidth',2);
+ax(2) = subplot(2,2,2);
+plot(t,x(:,2)-x(:,6),'LineWidth',2);
 legend('e_2');
 xlabel('Time [s]')
 % set(gca,'FontSize',18)
 grid on
 
+ax(3) = subplot(2,2,3);
+plot(t,x(:,3)-x(:,7),'LineWidth',2);
+legend('e_3');
+% set(gca,'FontSize',18)
+grid on
+
+ax(4) = subplot(2,2,4);
+plot(t,x(:,4)-x(:,8),'LineWidth',2);
+legend('e_4');
+xlabel('Time [s]')
+% set(gca,'FontSize',18)
+grid on
+%%
+figure(1)
+ax(1) = subplot(2,2,1);
+% plot(t,x(:,1),'-b','LineWidth',2);
+plot(t,x(:,1),'-b',t,x(:,5),'--r','LineWidth',2);
+legend('x_1','\overline x_1');
+% set(gca,'FontSize',18)
+grid on
+
+ax(2) = subplot(2,2,2);
+% plot(t,x(:,2),'-b','LineWidth',2);
+plot(t,x(:,2),'-b',t,x(:,6),'--r','LineWidth',2);
+legend('x_2','\overline x_2');
+xlabel('Time [s]')
+% set(gca,'FontSize',18)
+grid on
+
+ax(3) = subplot(2,2,3);
+% plot(t,x(:,3),'-b','LineWidth',2);
+plot(t,x(:,3),'-b',t,x(:,7),'--r','LineWidth',2);
+legend('x_1','\overline x_1');
+% set(gca,'FontSize',18)
+grid on
+
+ax(4) = subplot(2,2,4);
+% plot(t,x(:,4),'-b','LineWidth',2);
+plot(t,x(:,4),'-b',t,x(:,8),'--r','LineWidth',2);
+legend('x_2','\overline x_2');
+xlabel('Time [s]')
+% set(gca,'FontSize',18)
+grid on
+
+figure(3)
+subplot(2,2,1);
+plot(t,x(:,1),'-b','LineWidth',2);
+% plot(t,x(:,1),'-b',t,x(:,5),'--r','LineWidth',2);
+legend('x_1');
+% set(gca,'FontSize',18)
+grid on
+
+subplot(2,2,2);
+plot(t,x(:,2),'-b','LineWidth',2);
+% plot(t,x(:,2),'-b',t,x(:,6),'--r','LineWidth',2);
+legend('x_2');
+xlabel('Time [s]')
+% set(gca,'FontSize',18)
+grid on
+
+subplot(2,2,3);
+plot(t,x(:,3),'-b','LineWidth',2);
+% plot(t,x(:,3),'-b',t,x(:,7),'--r','LineWidth',2);
+legend('x_3');
+% set(gca,'FontSize',18)
+grid on
+
+subplot(2,2,4);
+plot(t,x(:,4),'-b','LineWidth',2);
+% plot(t,x(:,4),'-b',t,x(:,8),'--r','LineWidth',2);
+legend('x_4');
+xlabel('Time [s]')
+% set(gca,'FontSize',18)
+grid on

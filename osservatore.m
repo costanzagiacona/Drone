@@ -1,4 +1,4 @@
-function [dX, y_hat] = osservatore(t,X)
+function dX = osservatore(t,X)
 
     global c1 c2 c3 c4 k omegad1 d1
     % Parametri
@@ -30,7 +30,8 @@ function [dX, y_hat] = osservatore(t,X)
     
     % dinamica del processo
     % Pitch (su e giù)
-    u2 = 1;
+    % u2 = 0;
+    u2 = -10*x4; % Guadagno arbitrario per il controllo
      
     x1_dot_z = x2;
     x2_dot_z = 1/m*(-g*x3 - b*x2);
@@ -40,7 +41,7 @@ function [dX, y_hat] = osservatore(t,X)
 
     % uscita con rumore
     y = x1 + d1*sin(omegad1*t);
-    
+    % y = x1;
     % dinamica dell'osservatore 
     y_hat = x1_hat;
     x1_dot_hat = x2_hat + c1*k*(y-y_hat);
