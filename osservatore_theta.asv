@@ -1,6 +1,6 @@
-function dX = osservatore(t,X)
+function dX = osservatore_theta(t,X)
 
-    global c1 c2 c3 c4 k omegad1 d1
+    global c3 c4 k omegad1 d1 x3 x3_hat
     % Parametri
     g = 9.81;       % m/(s^2),
     m = 0.45;       % kg, peso del drone
@@ -17,38 +17,29 @@ function dX = osservatore(t,X)
     Izz = 8e-3;    % kg*m^2,
     I = [Ixx 0 0; 0 Iyy 0; 0 0 Izz];
 
-    dX = zeros(8,1);
-    %(X = [x1,x2,x1_hat,x2_hat]) ; z1 = x1_hat,z2 = x2_hat
-    x1 = X(1);
-    x2 = X(2);
-    x3 = X(3);
-    x4 = X(4);
-    x1_hat = X(5);
-    x2_hat = X(6);
-    x3_hat = X(7);
-    x4_hat = X(8);
+    dX = zeros(4,1);
+    x3 = X(1);
+    x4 = X(2);
+    x3_hat = X(3);
+    x4_hat = X(4);
     
     % dinamica del processo
     % Pitch (su e giù)
-    % u2 = 0;
-    u2 = -10*x4; % Guadagno arbitrario per il controllo
+    u2 = 0;
+    % u2 = -10*x4; % Guadagno arbitrario per il controllo
      
-    x1_dot_z = x2;
-    x2_dot_z = 1/m*(-g*x3 - b*x2);
     x3_dot_z = x4;
     x4_dot_z = p/Izz*u2;
-    x_dot_z = [x1_dot_z; x2_dot_z; x3_dot_z; x4_dot_z];
+    x_dot_z = [x3_dot_z; x4_dot_z];
 
     % uscita con rumore
-    y = x1 + d1*sin(omegad1*t);
-    % y = x1;
+    y = x3 + d1*sin(omegad1*t);
+
     % dinamica dell'osservatore 
-    y_hat = x1_hat;
-    x1_dot_hat = x2_hat + c1*k*(y-y_hat);
-    x2_dot_hat = 1/m*(-g*x3_hat - b*x2_hat) + c2*k^2*(y-y_hat);
+    y_hat = x3_hat;
     x3_dot_hat = x4_hat + c3*k^3*(y-y_hat);
     x4_dot_hat = p/Izz*u2 + c4*k^4*(y-y_hat);
   
-    dX = [x1_dot_z; x2_dot_z; x3_dot_z; x4_dot_z; x1_dot_hat; x2_dot_hat; x3_dot_hat; x4_dot_hat];
+    dX = [x3_dot_z; x4_dot_z; x3_dot_hat; x4_dot_hat];
 
 end
