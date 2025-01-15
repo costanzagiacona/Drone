@@ -36,13 +36,6 @@ Xhat_o = [0; 0];
 % x3_dot_z = x4;
 % x4_dot_z = p/Izz*u2;
 % x_dot_z = [x1_dot_z; x2_dot_z; x3_dot_z; x4_dot_z];
-% 
-% % Forza di thrust
-% T = cos(x3)/(m*g);
-
-% Funzione di controllo
-% h_x = 
-% C = forwarding();
 
 %% Funzione per osservatore di theta
 global c1 c2 c3 c4 k omegad1 d1 xtheta xtheta_hat
@@ -149,3 +142,10 @@ title(ax(2), "Errore stima omega")
 % set(gca,'FontSize',18)
 grid on
 
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% FORWARDING
+% h(x) = x1
+% il resto del sistema è dx = f(x) + g(x)*u
+% Studio stabilità dx con u=0
+% Verifica delle assunzioni, dal teorema sappiamo che u è GAS+LES
