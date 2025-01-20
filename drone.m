@@ -20,7 +20,6 @@ I = [Ixx 0 0; 0 Iyy 0; 0 0 Izz];
 
 % CONDIZIONI INIZIALI
 X_o = [2; 5];
-% X_o = [0; 0; 0; 0];
 Xhat_o = [0; 0];
 
 
@@ -43,8 +42,6 @@ global c1 c2 c3 c4 k omegad1 d1 xtheta xtheta_hat
 c3 = 15; 
 c4 = 50;  
 k = 100;
-c = [c1 c2 c3 c4];
-% k = 100;
 
 % valori disturbo
 d1 = 0.1;
@@ -91,14 +88,12 @@ grid on
 %% Funzione per osservatore di y
 % CONDIZIONI INIZIALI
 X_o = [2; 5];
-% X_o = [0; 0; 0; 0];
 Xhat_o = [0; 0];
 
 c1 = 15; 
 c2 = 50;  
 k = 100;
-c = [c1 c2 c3 c4];
-% k = 100;
+
 xtheta = x(end,2);
 xtheta_hat = x(end,4);
 
@@ -149,4 +144,5 @@ grid on
 % Studio stabilità dx con u=0
 % Verifica delle assunzioni, dal teorema sappiamo che u è GAS+LES
 clc
+clear
 forwarding();
