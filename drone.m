@@ -140,9 +140,6 @@ grid on
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% FORWARDING
-% il resto del sistema è dx = f(x) + g(x)*u
-% Studio stabilità dx con u=0
-% Verifica delle assunzioni, dal teorema sappiamo che u è GAS+LES
 clc
 clear
 forwarding();

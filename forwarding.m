@@ -4,65 +4,63 @@ function forwarding()
     m = 0.45;       % kg, peso del drone
     p = 1;
     
-    %%% Inerzie
+    % Inerzie
     Izz = 8e-3;    % kg*m^2,
 
-    syms x1 x2 x3 x4 M3_z3 M3_z4 z1 z2 z3 z4 
+    syms x1 x2 x3 x4 M3_z3 M3_z4 z1 z2 z3 z4 u4 u3 w4 w3 w2
     % Pitch (su e giù)
     % x1_dot_z = x2;
     % x2_dot_z = 1/m*(-g*x3);
     % x3_dot_z = x4;
     % x4_dot_z = p/Izz*u2;
 
+    %% PRIMA ITERAZIONE
     % Partiamo dal basso e consideriamo x2 e x3
     % Troviamo la funzione di Lyapunov V(x) -> controllo preliminare per
     % stabilizzare il sistema dx4 e avere forma strict feedforward
-    v = 1;
-    u2 = Izz/p*(-x4 + v);
+    u2 = Izz/p*(-x4 + u4);   % controllo preliminare
     V = (x4^2)/2;   % positiva e radialmente illimitata => dV = -x4^2 => x4=0 GES
     dV = -x4^2;
-    % Il teorema ci assicura GAS + LES
+    % Il teorema ci assicura GAS + LES per il primo sottosistema
     % v = -(dV-(x3-M)*dM);  
 
     % x4 = -(dM/dx4)*x4
+    % Manifold
     M4 = -x4;
     dM4 = -1;
-    v = -(-x4-(x3-M4)*dM4);
+    u4 = -(x4-(x3-M4)*dM4) + w4;
 
     % Cambio coordinate
     % z4 = x4;
     % z3 = x3-M4;
-    % abbiamo sostituito le x con le z in v
-    v = -(z4+z3);
 
-    % SECONDA ITERAZIONE
+    % abbiamo sostituito le x con le z in v
+    u4 = -(z4+z3) + w4;
+
+    %% SECONDA ITERAZIONE
     % Nelle nuove coordinate
-    dz4 = -2*z4-z3;
-    dz3 = -z3;% dz3 = dx3 - dM;
+    dz4 = -2*z4-z3 + w4;
+    dz3 = -z3 + w4;
 
     V3 = (z3^2)/2 + (z4^2)/2;
     dV3 = [z3, z4];
     
     syms  m1 m2 M2
  
+    % Cerchiamo la manifold senza pde 
     % Definizione dell'equazione
-    % lhs = (g/m)*(z4 - z3);
-    % rhs = -m1*z3 - m2*(2*z4 + z3);
     lhs = (g/m)*z4 == -2*m2*z4;
     rhs = -(g/m)*z3 == - m1*z3 - m2*z3;
-     
-    % Risolvere il sistema di equazioni per m1 e m2
-    % eq = lhs == rhs;
-     
+
     % Risolvi il sistema per m1 e m2
     sol = solve([lhs, rhs], [m1, m2]);
      
     % Mostra le soluzioni
-    disp('La soluzione per m1(z) è:');
-    disp(sol.m1);
-     
-    disp('La soluzione per m2(z) è:');
-    disp(sol.m2);
+    % disp('La soluzione per m1(z) è:');
+    % disp(sol.m1);
+    % 
+    % disp('La soluzione per m2(z) è:');
+    % disp(sol.m2);
 
     dM3 = [sol.m1 sol.m2];
 
@@ -70,23 +68,34 @@ function forwarding()
     M3_z3 = int(sol.m1,z3);
     M3_z4 = int(sol.m2,z4);
 
-    disp('M3 è:');
-    disp(M3_z3);
-    disp(M3_z4);
+    % disp('M3 è:');
+    % disp(M3_z3);
+    % disp(M3_z4);
 
-    g2 = [1; 0];
-    u3 = -(dV3 - z3*dM3)*g2;
+    g2 = [1; 1];
+    u3 = -(dV3 - z3*dM3)*g2 + w3;
 
-    A = stabilita_AS(g, m);
+    % Cambio di coordinate
+    % z2 = x2 - M3;
 
-    % x = [x1; x2; x3];
-    % % Calcolare la matrice di Lyapunov P
-    % [P, V] = trova_Lyapunov(A, x);
-    % 
-    % % Verificare che la derivata di Lyapunov sia definita negativa
-    % verifica_dV_negativa(A, P);
+    % Nelle nuove coordinate
+    dz2 = z3*(g/m)*(1-104/5) + z4*(2*g/m) - w3*(g/m);
+    %% TERZA ITERAZIONE
+   % Calcolo delle derivate parziali rispetto a z2, z3, z4
+    A = jacobian([dz2; dz3; dz4], [z2, z3, z4]);
 
-    P = solveSylvester(A);
+    % Semplificazione della matrice
+    AA = double(A)
+
+    % A = [];
+    % Mostra la matrice A semplificata
+    disp('Matrice A:');
+    disp(AA);
+    disp(eig(AA));
+
+    % P = solveSylvester(A);
+    Q = eye(3);
+    P = lyap(A,Q);
     disp(P);
     disp(eig(P))
 
@@ -95,18 +104,18 @@ function forwarding()
     dV2 = z2*diff(V2,z2) + z3*diff(V2, z3) + z4*diff(V2, z4);
 
     k = 669.2600;
- 
     a = 0.0045;
-     
     b = 4.0489;
-     
     c = 21.800;
-    
     d = 0.0489;
-     
     e = 1.9511;
      
+    % Sistema nelle coordinate z
+    % dz2 = -k*z3 + c*z4;
+    % dz3 = -z3;
+    % dz4 = -2*z4 - z3;
 
+    %% DA VERIFICARE 
     % Condizioni iniziali (z2, z3, z4)
     z0 = [1; 0; 0]; % Esempio di condizioni iniziali (z2(0), z3(0), z4(0))
      
