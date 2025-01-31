@@ -142,4 +142,5 @@ grid on
 %% FORWARDING
 clc
 clear
-forwarding();
+% forwarding();
+stabilita_AS();
