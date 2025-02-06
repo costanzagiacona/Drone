@@ -62,8 +62,6 @@
          0, 0, 0];
     
     B = [0; 0; k];
-
-    BB = [0; B];
     
     % Posizioni desiderate degli autovalori (ad esempio, -1, -2, -3)
     desired_poles = [-1, -2, -3];
@@ -77,8 +75,7 @@
     % Matriss modificata A - BK
     AA = A - B * K
 
-    A4 = vertcat([1 0 0],AA);
-    A4 = horzcat([0;0;0;0], A4);
+    A4 = []
     
     % Verifica che gli autovalori di A_mod abbiano parte reale negativa
     eig(AA)
