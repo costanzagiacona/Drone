@@ -28,13 +28,77 @@
     % Matriss modificata A - BK
     AA = A - B * K
 
+    KK = [0 K];
+
     A4 = vertcat([1 0 0],AA);
     A4 = horzcat([0;0;0;0], A4);
     
     % Verifica che gli autovalori di A_mod abbiano parte reale negativa
     eig(AA)
 
-    % Definizione della matrice identità I
+    %%
+    % 2. Definisci le matrici di ponderazione Q e R
+    Q = diag([100, 10, 1]);  % Penalizza gli stati (puoi adattare questi valori)
+    R = 1;  % Penalizza l'ingresso (puoi adattarlo)
+    
+    % 3. Calcola il guadagno LQR
+    [K, S, e] = lqr(A, B, Q, R);
+
+    AA = A - B * K
+
+    KK = [0 K];
+
+    A4 = vertcat([1 0 0],AA);
+    A4 = horzcat([0;0;0;0], A4);
+    
+    % Verifica che gli autovalori di A_mod abbiano parte reale negativa
+    eig(AA)
+ 
+    %% Definizione della matrice di uscita C per x1 e x2
+    C = [1 0 0 0;
+         0 1 0 0];
+     
+    % Transposta di C per il calcolo dell'osservatore    
+    C_t = C';
+     
+    O = obsv(A4, C);
+    rango = rank(O);
+    if(rango == 4)
+        disp('A, C osservabile')
+    else
+        disp('A, C non osservabile')
+    end
+
+    epsilon = 0.01; % Scegli un valore piccolo per un osservatore ad alto guadagno
+    L0 = place(A4', C', [-10 -12 -15 -18])'; % Calcola L0 con poli scelti
+    L_oss = (1/epsilon) * L0; % Scala L0 con il parametro di alto guadagno
+    disp('Matrice L per osservatore ad alto guadagno:')
+    disp(L_oss)
+
+    %% Definizione della matrice di uscita C per x3 e x4
+    % C = [0 1 0 0;
+    %     0 0 1 0;
+    %      0 0 0 1];
+    C2 = eye(4);
+    % Transposta di C per il calcolo dell'osservatore    
+    C_t = C2';
+     
+    O = obsv(A4, C2);
+    rango = rank(O);
+    if(rango == 4)
+        disp('(A, C) osservabile')
+    else
+        error('(A, C) non osservabile')
+    end
+
+    epsilon = 1; % Scegli un valore piccolo per un osservatore ad alto guadagno
+    L0 = place(A4', C2', [-10 -12 -15 -18])'; % Calcola L0 con poli scelti
+    L_oss = (1/epsilon) * L0; % Scala L0 con il parametro di alto guadagno
+    disp('Matrice L per osservatore ad alto guadagno:')
+    disp(L_oss)
+
+
+    %% Definizione della matrice identità I
     I = eye(size(A));
 
     % Risolvere l'equazione di Lyapunov per P
@@ -100,7 +164,7 @@
     m2 = sol.m2;
     m3 = sol.m3;
     m4 = sol.m4;
-    m = [m2 , m3 , m4]
+    manifold = [m2 , m3 , m4]
 
     % Calcola gli integrali per ciascuna funzione
     % int_m1 = integral(m2, 0, x2);
@@ -112,7 +176,7 @@
     %% Definizione parametri
     dM = [m2 , m3 , m4]
 
-    eD = dM - m
+    eD = dM - manifold
 
     %% Trovo ||f(x)||^2 serve per calcolo dL*dV*f + 1/2 * norm_f per trovare alpha
         % Definiamo le variabili simboliche
