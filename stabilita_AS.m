@@ -52,7 +52,7 @@
     % A4 = horzcat([0;0;0;0], A4);
 
     %% Osservatore per tutti gli stati
-    C = eye(4);
+    C = [1 0 0 0];
      
     O = obsv(A4, C);
     rango = rank(O);
@@ -117,7 +117,7 @@
     syms m2 m3 m4;
     
     % Equazioni
-    eq1 = 0.24 * m4 == 1;               % 0.24*m4 = 1
+    eq1 = 0.27 * m4 == 1;               % 0.27*m4 = 1
     eq2 = -21.80 * m2 + 11 == 0;        % -21.80*m2 + 11 = 0
     eq3 = m3 - 6 * m4 == 0;             % m3 - 6*m4 = 0
     
@@ -165,17 +165,20 @@
     % disp(norm_f);
 
     %% calcolo L(V)
-    syms mu
+    syms x1 mu
     alpha = 534.81;
     L = (alpha + mu)*V;
     dL = (alpha + mu);
 
     g_x = [0 0 1]';
-    z = -dM*g_x;
+    dz = -dM*g_x;
+    z = x1 - M;
 
     r = 1;
 
     u_forwarding = -(dL*dV - z*dM)*g_x
+
+    u_f = collect(u_forwarding, [x1, x2, x3, x4, mu]);
 
 
 
