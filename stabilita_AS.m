@@ -1,11 +1,11 @@
-
+%DRONE
     syms x2 x3 x4
     % Parametri del sistema
-    g = 9.81;  % accelerazione gravitazionale (m/s^2)
-    m = 0.45;     % massa (kg)
-    Izz = 8e-3;    % kg*m^2
+    g = 9.81;   % accelerazione gravitazionale (m/s^2)
+    m = 0.45;   % massa (kg)
+    Izz = 8e-3; % kg*m^2
     p = 1;
-    k = p/Izz;     % costante di guadagno
+    k = p/Izz;  % costante di guadagno
     
     % Matrice A e B del sistema
     A = [0, -g/m, 0;
@@ -16,15 +16,14 @@
 
     BB = [0; B];
     
-    % Posizioni desiderate degli autovalori (ad esempio, -1, -2, -3)
+    %% Controllo preliminare
+    % Posizioni desiderate degli autovalori 
     desired_poles = [-1, -2, -3];
     
-    % Calcola il guadagno K che sposta gli autovalori desiderati
-    %K = place(A, B, desired_poles)
-    % Calcolo del guadagno K con il metodo di Ackermann
+    % Calcola il guadagno K che sposta gli autovalori desiderati con il metodo di Ackermann
     K = acker(A, B, desired_poles);
 
-    % Matriss modificata A - BK
+    % Matrice modificata A - BK
     AA = A - B * K;
     % Verifica che gli autovalori di A_mod abbiano parte reale negativa
     eig(AA);
@@ -34,25 +33,9 @@
     A4 = vertcat([1 0 0],AA);
     A4 = horzcat([0;0;0;0], A4);
    
-    %%
-    % 2. Definisci le matrici di ponderazione Q e R
-    % Q = diag([100, 10, 1]);  % Penalizza gli stati (puoi adattare questi valori)
-    % R = 1;  % Penalizza l'ingresso (puoi adattarlo)
-    % 
-    % % 3. Calcola il guadagno LQR
-    % [K, S, e] = lqr(A, B, Q, R);
-    % 
-    % AA = A - B * K;
-    % % Verifica che gli autovalori di A_mod abbiano parte reale negativa
-    % eig(AA);
-    % 
-    % KK = [0 K];
-    % 
-    % A4 = vertcat([1 0 0],AA);
-    % A4 = horzcat([0;0;0;0], A4);
 
-    %% Osservatore per tutti gli stati
-    C = [1 0 0 0];
+    %% Osservatore Luenberger per tutti gli stati
+    C = [1 0 0 0]; %misura di x1
      
     O = obsv(A4, C);
     rango = rank(O);
@@ -62,14 +45,14 @@
         error('(A, C) non osservabile')
     end
 
-    epsilon = 1; % Scegli un valore piccolo per un osservatore ad alto guadagno
+    epsilon = 1; % Scegli un valore velocità osservatore
     L0 = place(A4', C', [-10 -12 -15 -18])'; % Calcola L0 con poli scelti
     L_oss = (1/epsilon) * L0; % Scala L0 con il parametro di alto guadagno
     disp('Matrice L per osservatore ad alto guadagno:')
     disp(L_oss)
 
 
-    %% Definizione della matrice identità I
+    %% FORWARDING
     I = eye(size(A));
 
     % Risolvere l'equazione di Lyapunov per P
