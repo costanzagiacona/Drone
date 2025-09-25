@@ -104,7 +104,7 @@ syms m2 m3 m4;
 
 % Equazioni
 eq1 = 0.27 * m4 == 1;               % 0.27*m4 = 1
-eq2 = -21.80 * m2 + 11 == 0;        % -21.80*m2 + 11 = 0
+eq2 = -21.80 * m2 + 11 * m4 == 0;   % -21.80*m2 + 11 *m4= 0
 eq3 = m3 - 6 * m4 == 0;             % m3 - 6*m4 = 0
 
 % Risolviamo il sistema di equazioni
